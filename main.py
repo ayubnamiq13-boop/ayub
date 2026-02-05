@@ -4,7 +4,8 @@ import google.generativeai as genai
 
 # ١. کلیلەکانی خۆت لێرە دابنێ
 TOKEN = "8424588883:AAFxOXGpsEkQjBps9eLGAh9qSWC5JS_W-HA"
-GEMINI_API_KEY = "لێرە_کلیلە_خۆڕاییەکەی_گۆگڵ_دابنێ"
+GEMINI_API_KEY = "AIzaSy..."
+
 
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
