@@ -28,6 +28,7 @@ def get_signal(message):
         bot.reply_to(message, f"🎯 پێشنیاری AI:\n\n💰 نرخ: {price}\n💡 بڕیار: {response.text}")
     except:
         bot.reply_to(message, "ناوی دراوەکە بە ڕاستی بنووسە، وەک: EURUSD")
+        flask
 
 print("بۆتەکە چالاکە...")
 bot.infinity_polling()
