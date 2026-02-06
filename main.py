@@ -28,9 +28,6 @@ def get_signal(message):
         prompt = f"بە کورتی بڵێ بۆ ٥ خولەک Call یان Put بکەم؟ نرخ ئێستا {price}ـە بۆ {pair}. وەک پسپۆڕی باکێت ئۆپشن نرخەکە بزانە."
         response = model.generate_content(prompt)
         bot.reply_to(message, f"🎯 پێشنیاری AI:\n\n💰 نرخ: {price}\n{response.text}")
-    except:
-        bot.reply_to(message, "⚠️ ناوی دراوەکە بە ڕاستی بنووسە، وەک: EURUSD")
-
 def run():
     app.run(host='0.0.0.0', port=8000)
 
