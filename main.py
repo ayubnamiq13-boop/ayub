@@ -5,14 +5,13 @@ from flask import Flask
 from threading import Thread
 from telebot import types
 
-# کلیلەکانت لێرە دابنێ
+# کلیلەکانت
 TOKEN = "8424588883:AAFxOXGpsEkQjBps9eLGAh9qSWC5JS_W-HA"
 GEMINI_API_KEY = "AIzaSyAtfMrX4eciLZmVZPbmtwk_8-ZcrGkSEzQ"
-try:
-    genai.configure(api_key=GEMINI_API_KEY)
- model = genai.GenerativeModel('gemini-2.0-flash-exp')
-except:
-    print("کێشە لە کلیلەکەدا هەیە")
+
+# ڕێکخستنی مۆدێل (لێرەدا وەشانی نوێمان داناوە بۆ چارەسەری هەڵەی 404)
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask('')
@@ -37,20 +36,28 @@ def send_welcome(message):
 @bot.message_handler(func=lambda message: True)
 def get_signal(message):
     pair = message.text.upper().replace("GOLD (GC=F)", "GC=F")
-    msg = bot.reply_to(message, f"🔍 خەریکم شیکاری {pair} دەکەم...")
+    msg = bot.reply_to(message, f"🔍 خەریکم شیکاری {pair} دەکەم بۆ Pocket Option...")
     
     try:
+        # وەرگرتنی داتا لە Yahoo Finance
         symbol = f"{pair}=X" if len(pair) == 6 else pair
         data = yf.Ticker(symbol).history(period="1d", interval="5m")
+        
+        if data.empty:
+            bot.edit_message_text("❌ داتای بازاڕ نەدۆزرایەوە.", message.chat.id, msg.message_id)
+            return
+
         price = round(data['Close'].iloc[-1], 5)
         
-        prompt = f"Analyze {pair} at {price}. Give me: 1. Action (BUY or SELL), 2. Duration (5m), 3. Reasoning in Kurdish."
+        # ناردنی داواکاری بۆ Gemini
+        prompt = f"Analyze the candlestick chart for {pair} at price {price}. Tell me to BUY or SELL for a 5-minute duration and give a short reason in Kurdish."
         response = model.generate_content(prompt)
         
-        bot.edit_message_text(f"📊 **{pair}**\n💰 نرخ: {price}\n\n{response.text}", message.chat.id, msg.message_id)
+        final_text = f"📊 **{pair}**\n💰 نرخ: {price}\n\n{response.text}"
+        bot.edit_message_text(final_text, message.chat.id, msg.message_id)
         
     except Exception as e:
-        bot.edit_message_text(f"❌ هەڵە: {str(e)}\nتکایە دڵنیابە کلیلەکەت ڕاستە.", message.chat.id, msg.message_id)
+        bot.edit_message_text(f"⚠️ هەڵەیەک ڕوویدا: {str(e)}\nدڵنیابە API Key ڕاستە.", message.chat.id, msg.message_id)
 
 def run():
     app.run(host='0.0.0.0', port=8000)
