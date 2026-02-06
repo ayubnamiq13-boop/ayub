@@ -9,16 +9,16 @@ from telebot import types
 TOKEN = "8424588883:AAFxOXGpsEkQjBps9eLGAh9qSWC5JS_W-HA"
 GEMINI_API_KEY = "AIzaSyAtfMrX4eciLZmVZPbmtwk_8-ZcrGkSEzQ"
 
-# ڕێکخستنی مۆدێل (لێرەدا وەشانی نوێمان داناوە بۆ چارەسەری هەڵەی 404)
+# ڕێکخستنی مۆدێل - لێرەدا وەشانی گونجاومان داناوە بۆ چارەسەری هەڵەی 404
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask('')
 
 @app.route('/')
 def home():
-    return "سێرڤەرەکە کار دەکات!"
+    return "بۆتەکە چالاکە!"
 
 def main_menu():
     markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
