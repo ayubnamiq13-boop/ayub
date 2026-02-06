@@ -5,20 +5,23 @@ from flask import Flask
 from threading import Thread
 from telebot import types
 
-
+# کلیلەکانت لێرە دابنێ
 TOKEN = "8424588883:AAFxOXGpsEkQjBps9eLGAh9qSWC5JS_W-HA"
 GEMINI_API_KEY = "AIzaSyAtfMrX4eciLZmVZPbmtwk_8-ZcrGkSEzQ"
 
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')
+try:
+    genai.configure(api_key=GEMINI_API_KEY)
+    model = genai.GenerativeModel('gemini-1.5-flash')
+except:
+    print("کێشە لە کلیلەکەدا هەیە")
+
 bot = telebot.TeleBot(TOKEN)
 app = Flask('')
 
 @app.route('/')
 def home():
-    return "بۆتەکە چالاکە!"
+    return "سێرڤەرەکە کار دەکات!"
 
-# مینیۆی دوگمەکان
 def main_menu():
     markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     btn1 = types.KeyboardButton('EURUSD')
@@ -30,40 +33,25 @@ def main_menu():
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.reply_to(message, "سڵاو! یەکێک لەم دراوانە هەڵبژێرە بۆ وەرگرتنی سیگناڵ:", reply_markup=main_menu())
+    bot.reply_to(message, "🚀 بۆتەکە ئامادەیە! دراوێک هەڵبژێرە:", reply_markup=main_menu())
 
 @bot.message_handler(func=lambda message: True)
 def get_signal(message):
     pair = message.text.upper().replace("GOLD (GC=F)", "GC=F")
-    msg = bot.send_message(message.chat.id, f"🔍 خەریکم شیکاری {pair} دەكەم...")
+    msg = bot.reply_to(message, f"🔍 خەریکم شیکاری {pair} دەکەم...")
     
     try:
         symbol = f"{pair}=X" if len(pair) == 6 else pair
         data = yf.Ticker(symbol).history(period="1d", interval="5m")
         price = round(data['Close'].iloc[-1], 5)
         
-        # ناردنی زانیاری بۆ Gemini بۆ بڕیاردان
-        prompt = f"Act as a professional binary options trader. Analyze {pair} at price {price}. Give me a signal: 1. Action (BUY or SELL in bold), 2. Duration (in minutes), 3. Confidence level (%). Keep it very short in Kurdish."
-        
+        prompt = f"Analyze {pair} at {price}. Give me: 1. Action (BUY or SELL), 2. Duration (5m), 3. Reasoning in Kurdish."
         response = model.generate_content(prompt)
         
-        # دیاریکردنی ڕەنگ یان ئیمۆجی بەپێی وەڵامەکە
-        signal_text = response.text
-        emoji = "🟢" if "BUY" in signal_text.upper() or "CALL" in signal_text.upper() else "🔴"
-        
-        final_message = (
-            f"📊 **Symbol:** {pair}\n"
-            f"💰 **Price:** {price}\n"
-            f"━━━━━━━━━━━━━━\n"
-            f"{emoji} **Signal:** {signal_text}\n"
-            f"━━━━━━━━━━━━━━\n"
-            f"⏰ **Timeframe:** 5 Minutes"
-        )
-        
-        bot.edit_message_text(final_message, message.chat.id, msg.message_id, parse_mode="Markdown")
+        bot.edit_message_text(f"📊 **{pair}**\n💰 نرخ: {price}\n\n{response.text}", message.chat.id, msg.message_id)
         
     except Exception as e:
-        bot.edit_message_text("⚠️ هەڵەیەک ڕوویدا. دڵنیابە API Key ڕاستە.", message.chat.id, msg.message_id)
+        bot.edit_message_text(f"❌ هەڵە: {str(e)}\nتکایە دڵنیابە کلیلەکەت ڕاستە.", message.chat.id, msg.message_id)
 
 def run():
     app.run(host='0.0.0.0', port=8000)
