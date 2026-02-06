@@ -10,7 +10,7 @@ TOKEN = "8424588883:AAFxOXGpsEkQjBps9eLGAh9qSWC5JS_W-HA"
 GEMINI_API_KEY = "AIzaSyAtfMrX4eciLZmVZPbmtwk_8-ZcrGkSEzQ"
 try:
     genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+ model = genai.GenerativeModel('gemini-2.0-flash-exp')
 except:
     print("کێشە لە کلیلەکەدا هەیە")
 
