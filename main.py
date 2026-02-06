@@ -5,7 +5,7 @@ from flask import Flask
 from threading import Thread
 from telebot import types
 
-# ١. کلیلەکانت لێرە دابنێ
+
 TOKEN = "8424588883:AAFxOXGpsEkQjBps9eLGAh9qSWC5JS_W-HA"
 GEMINI_API_KEY = "AIzaSyAtfMrX4eciLZmVZPbmtwk_8-ZcrGkSEzQ"
 
