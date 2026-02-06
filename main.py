@@ -7,7 +7,7 @@ from telebot import types
 
 # ١. کلیلەکانت لێرە دابنێ
 TOKEN = "8424588883:AAFxOXGpsEkQjBps9eLGAh9qSWC5JS_W-HA"
-GEMINI_API_KEY = "gen-lang-client-0913413375"
+GEMINI_API_KEY = "AIzaSyCgxnmu32SL2rZJpvE3coz78YFBbUuPWes"
 
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
